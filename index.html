@@ -15,8 +15,31 @@
         
         #concurso-info { font-size: 14px; color: #1a6337; margin-top: 15px; font-weight: bold; }
         
-        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0; padding: 15px; background: #f8fafc; border-radius: 15px; border: 1px solid #eee; }
-        .bola { width: 42px; height: 42px; background: white; border: 2px solid #dee2e6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #adb5bd; transition: 0.2s; }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 5px; 
+            margin: 15px 0; 
+            padding: 10px; 
+            background: #f8fafc; 
+            border-radius: 15px; 
+        }
+        .bola { 
+            width: 100%; /* Elas vão ocupar o espaço disponível */
+            aspect-ratio: 1 / 1; /* Garante que continuem redondas */
+            max-width: 45px;
+            background: white; 
+            border: 2px solid #dee2e6; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            color: #adb5bd; 
+            font-size: 14px;
+            margin: 0 auto;
+        }
+        
         .selecionada { background: #208046; color: white; border-color: #1a6337; transform: scale(1.05); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         
         button { background: #208046; color: white; border: none; padding: 18px; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; margin-top: 10px; transition: 0.3s; }
@@ -54,6 +77,9 @@
         <div id="txtPremio" style="font-size: 13px; margin-top: 5px; font-weight: bold;"></div>
     </div>
 
+<div id="dica-tecnica" style="margin-top: 15px; font-size: 12px; color: #1b4d2e; background: #e8f5e9; padding: 10px; border-radius: 8px; display: none;">
+    <strong>💡 Dica do Algoritmo:</strong> <span id="txtDica"></span>
+</div>
     <div id="stats">
         <span class="contador-label">Simulações Realizadas</span>
         <div id="contador">0</div>
@@ -137,6 +163,16 @@
 
         let contadorEl = document.getElementById('contador');
         contadorEl.innerText = parseInt(contadorEl.innerText) + 1;
+
+        // Lógica de números que não saíram (atrasados)
+        let todosNumeros = Array.from({length: 25}, (_, i) => i + 1);
+        let ausentes = todosNumeros.filter(n => !ultimoSorteioReal.includes(n));
+        
+        // Pegar 3 números ausentes aleatórios para sugerir
+        let sugestao = ausentes.sort(() => 0.5 - Math.random()).slice(0, 3);
+        
+        document.getElementById('dica-tecnica').style.display = 'block';
+        document.getElementById('txtDica').innerText = "Fique de olho nos números " + sugestao.join(", ") + ". Eles não saíram no último concurso e podem aparecer agora!";
     }
 
     // Iniciar o site buscando os dados
