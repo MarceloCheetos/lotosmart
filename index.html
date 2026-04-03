@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="description" content="Gerador inteligente de jogos para Lotofácil baseado em tendências e estatísticas reais.">
     <meta name="keywords" content="Lotofácil, Gerador de loteria, Simulador Lotofácil, Apostas">
+   
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#208046">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/248/248930.png">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LotoSmart - Analisador Estratégico</title>
@@ -214,6 +218,10 @@
     const mensagem = "Olha o jogo que gerei no LotoSmart: " + window.jogoAtual + "\n\nGere o seu aqui: " + window.location.href;
     const url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(mensagem);
     window.open(url, '_blank');
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
 }
 
     // Iniciar o site buscando os dados
