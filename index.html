@@ -71,6 +71,10 @@
 
     <button onclick="executarAnalise()">GERAR JOGO & CONFERIR</button>
 
+    <button id="btnZap" onclick="compartilharZap()" style="background: #25d366; margin-top: 10px; display: none;">
+    Enviar Jogo no WhatsApp 📱
+</button>
+
     <div id="resultadoSimulado" class="painel-resultado">
         <div style="font-size: 13px; font-weight: bold;">Simulação com resultado real:</div>
         <div class="acertos-num" id="txtAcertos">0 ACERTOS</div>
@@ -173,7 +177,21 @@
         
         document.getElementById('dica-tecnica').style.display = 'block';
         document.getElementById('txtDica').innerText = "Fique de olho nos números " + sugestao.join(", ") + ". Eles não saíram no último concurso e podem aparecer agora!";
+    
+    // Mostrar botão de Zap e preparar a mensagem
+    const btnZap = document.getElementById('btnZap');
+    btnZap.style.display = 'block';
+    
+    // Salvar o jogo atual para o Zap
+    window.jogoAtual = meuJogo.sort((a, b) => a - b).join(" - ");
+
     }
+
+    function compartilharZap() {
+    const mensagem = "Olha o jogo que gerei no LotoSmart: " + window.jogoAtual;
+    const url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(mensagem);
+    window.open(url, '_blank');
+}
 
     // Iniciar o site buscando os dados
     buscarResultadoReal();
