@@ -108,6 +108,13 @@
     </div>
 </div>
 
+<div style="margin-top: 25px; border-top: 2px dashed #eee; padding-top: 15px;">
+    <h3 style="font-size: 15px; color: #1b4d2e; margin-bottom: 10px;">📅 Últimos Sorteios</h3>
+    <div id="lista-historico" style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="font-size: 12px; color: #94a3b8;">Carregando histórico...</div>
+    </div>
+</div>
+
     <div class="footer-ads">ESPAÇO PARA ANÚNCIOS ADSENSE</div>
 </div>
 
@@ -140,6 +147,8 @@
 
             statusEl.innerText = "CONECTADO AO BANCO DA CAIXA";
             console.log("Dados recebidos:", dados);
+            // Depois de carregar o atual, carrega o passado
+setTimeout(carregarHistorico, 1000);
         } catch (erro) {
             console.error("Erro ao buscar dados:", erro);
             statusEl.innerText = "ERRO AO CONECTAR. USANDO DADOS PADRÃO.";
@@ -222,6 +231,34 @@
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
+}
+
+async function carregarHistorico() {
+    const lista = document.getElementById('lista-historico');
+    const concursoAtual = parseInt(document.getElementById('num-concurso').innerText);
+    
+    if (!concursoAtual) return; // Espera o concurso principal carregar
+
+    let htmlHistorico = "";
+    
+    // Vamos buscar os 3 concursos anteriores
+    for (let i = 1; i <= 3; i++) {
+        let numBusca = concursoAtual - i;
+        try {
+            const res = await fetch(`https://loteriascaixa-api.herokuapp.com/api/lotofacil/${numBusca}`);
+            const dado = await res.json();
+            
+            htmlHistorico += `
+                <div style="background: #f1f5f9; padding: 10px; border-radius: 10px; text-align: left; border-left: 4px solid #208046;">
+                    <div style="font-weight: bold; font-size: 12px; color: #1e293b;">Concurso ${dado.concurso}</div>
+                    <div style="font-size: 11px; color: #475569; margin-top: 4px; letter-spacing: 1px;">
+                        ${dado.dezenas.join(" - ")}
+                    </div>
+                </div>
+            `;
+        } catch (e) { console.error("Erro no histórico", e); }
+    }
+    lista.innerHTML = htmlHistorico;
 }
 
     // Iniciar o site buscando os dados
