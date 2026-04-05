@@ -166,24 +166,49 @@
         window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(mensagem), '_blank');
     }
 
-    async function carregarHistorico() {
-        const lista = document.getElementById('lista-historico');
-        const concursoAtual = parseInt(document.getElementById('num-concurso').innerText);
-        if (!concursoAtual) return;
-        let htmlHistorico = "";
-        for (let i = 1; i <= 3; i++) {
-            try {
-                const res = await fetch(`https://loteriascaixa-api.herokuapp.com/api/lotofacil/${concursoAtual - i}`);
-                const dado = await res.json();
-                htmlHistorico += `
-                    <div style="background: #f1f5f9; padding: 10px; border-radius: 10px; text-align: left; border-left: 4px solid #208046;">
-                        <div style="font-weight: bold; font-size: 12px;">Concurso ${dado.concurso}</div>
-                        <div style="font-size: 11px; color: #475569; letter-spacing: 1px;">${dado.dezenas.join(" - ")}</div>
-                    </div>`;
-            } catch (e) { console.error(e); }
-        }
-        lista.innerHTML = htmlHistorico;
+async function carregarHistorico() {
+    const lista = document.getElementById('lista-historico');
+    const numConcursoEl = document.getElementById('num-concurso');
+    const concursoAtual = parseInt(numConcursoEl.innerText);
+    
+    if (!concursoAtual || isNaN(concursoAtual)) return; 
+
+    let htmlHistorico = "";
+
+    // 1. ADICIONAR O RESULTADO DO CONCURSO ATUAL (Destaque)
+    htmlHistorico += `
+        <div style="background: #e8f5e9; padding: 12px; border-radius: 12px; text-align: left; border: 2px solid #208046; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 900; font-size: 14px; color: #1b4d2e;">🏆 RESULTADO ATUAL (${concursoAtual})</span>
+                <span style="font-size: 10px; background: #208046; color: white; padding: 2px 8px; border-radius: 10px;">OFICIAL</span>
+            </div>
+            <div style="font-size: 13px; color: #1b4d2e; margin-top: 8px; letter-spacing: 2px; font-weight: bold; background: white; padding: 8px; border-radius: 8px; text-align: center;">
+                ${ultimoSorteioReal.join(" - ")}
+            </div>
+        </div>
+        <div style="font-size: 11px; color: #64748b; margin-bottom: 10px; text-align: left; font-weight: bold;">📅 CONCURSOS ANTERIORES:</div>
+    `;
+
+    // 2. BUSCAR OS 3 ANTERIORES (Histórico Normal)
+    for (let i = 1; i <= 3; i++) {
+        let numBusca = concursoAtual - i;
+        try {
+            const res = await fetch(`https://loteriascaixa-api.herokuapp.com/api/lotofacil/${numBusca}`);
+            const dado = await res.json();
+            
+            htmlHistorico += `
+                <div style="background: #f8fafc; padding: 10px; border-radius: 10px; text-align: left; border-left: 4px solid #cbd5e1; margin-bottom: 5px;">
+                    <div style="font-weight: bold; font-size: 12px; color: #475569;">Concurso ${dado.concurso}</div>
+                    <div style="font-size: 11px; color: #64748b; margin-top: 4px; letter-spacing: 1px;">
+                        ${dado.dezenas.join(" - ")}
+                    </div>
+                </div>
+            `;
+        } catch (e) { console.error("Erro no histórico", e); }
     }
+    
+    lista.innerHTML = htmlHistorico;
+}
 
     if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
     buscarResultadoReal();
